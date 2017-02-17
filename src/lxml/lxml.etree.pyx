@@ -705,6 +705,14 @@ cdef public class _Element [ type LxmlElementType, object LxmlElement ]:
     cdef xmlNode* _c_node
     cdef object _tag
 
+    property from_cdata:
+        u"""If current element contains text and the text was extracted from CDATA, only valid with strip_cdata=False
+        configuration.
+        """
+        def __get__(self):
+            _assertValidNode(self)
+            return self._c_node.children != NULL and self._c_node.children.type == tree.XML_CDATA_SECTION_NODE
+
     def _init(self):
         u"""_init(self)
 
