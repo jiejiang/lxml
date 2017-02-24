@@ -56,7 +56,9 @@ cimport cpython.mem
 cimport cpython.ref
 from libc cimport limits, stdio, stdlib
 from libc cimport string as cstring_h   # not to be confused with stdlib 'string'
-from libc.string cimport const_char
+from libc.string cimport const_char, strlen
+from libc.stdlib cimport malloc, free
+from libc.stdio cimport printf
 
 try:
     import __builtin__
@@ -712,6 +714,19 @@ cdef public class _Element [ type LxmlElementType, object LxmlElement ]:
         def __get__(self):
             _assertValidNode(self)
             return self._c_node.children != NULL and self._c_node.children.type == tree.XML_CDATA_SECTION_NODE
+
+    def wrap_raw_content(self, tag):
+        head = "<%s>" % tag
+        tail = "</%s>" % tag
+        cdef bytes py_head = head.encode('utf8'), py_tail = tail.encode('utf8')
+        xml_head = tree.xmlCharStrdup(<char*>py_head)
+        xml_tail = tree.xmlCharStrdup(<char*>py_tail)
+        xml_body = tree.xmlStrcat(tree.xmlStrcat(xml_head, self._c_node.children.content), xml_tail)
+        free(self._c_node.children.content)
+        free(xml_tail)
+        self._c_node.children.content = xml_body
+        self._c_node.children.type = tree.XML_TEXT_NODE
+        self._c_node.children.name = tree.xmlStringTextNoenc
 
     def _init(self):
         u"""_init(self)

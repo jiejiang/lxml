@@ -20,7 +20,12 @@ cdef extern from "libxml/xmlstring.h":
     cdef const_xmlChar* xmlStrstr(const_xmlChar* str1, const_xmlChar* str2) nogil
     cdef const_xmlChar* xmlStrchr(const_xmlChar* str1, xmlChar ch) nogil
     cdef const_xmlChar* _xcstr "(const xmlChar*)PyBytes_AS_STRING" (object s)
+    cdef xmlChar* xmlCharStrdup(const_char* cur) nogil
+    cdef xmlChar* xmlStrcat(xmlChar* cur, const_xmlChar* add) nogil
 
+cdef extern from "libxml/parserInternals.h":
+    const xmlChar* xmlStringTextNoenc
+    
 cdef extern from "libxml/encoding.h":
     ctypedef enum xmlCharEncoding:
         XML_CHAR_ENCODING_ERROR = -1 # No char encoding detected
