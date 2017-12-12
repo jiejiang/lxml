@@ -716,8 +716,8 @@ cdef public class _Element [ type LxmlElementType, object LxmlElement ]:
             return self._c_node.children != NULL and self._c_node.children.type == tree.XML_CDATA_SECTION_NODE
 
     def wrap_raw_content(self, tag):
-        head = "<%s>" % tag
-        tail = "</%s>" % tag
+        head = "<%s>" % tag if tag else ""
+        tail = "</%s>" % tag if tag else ""
         cdef bytes py_head = head.encode('utf8'), py_tail = tail.encode('utf8')
         xml_head = tree.xmlCharStrdup(<char*>py_head)
         xml_tail = tree.xmlCharStrdup(<char*>py_tail)
